@@ -49,3 +49,4 @@ This project is designed to manage the status of Menu Items in a restaurant, bas
    start http://localhost:8080/swagger-ui/index.html
 
 
+![Diagram of System Architecture](/img.PNG)
