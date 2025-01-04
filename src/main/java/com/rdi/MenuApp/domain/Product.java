@@ -1,6 +1,11 @@
 package com.rdi.MenuApp.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +15,11 @@ import java.util.List;
 @Table(name = "PRODUCT")
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class Product {
 
+    public Product() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,13 +46,17 @@ public class Product {
         return components;
     }
 
+    @NotBlank
     @Column(name = "PRD_NAME")
     private String name;
 
+    @Min(1)
+    @Max(3)
     @Column(name = "TYPE")
     private int type; // 1 = PRODUCT, 2 = CHOICE, 3 = VALUE MEAL
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonManagedReference  // Adicionando aqui
     private ProductStatus status;
 
     @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL)
