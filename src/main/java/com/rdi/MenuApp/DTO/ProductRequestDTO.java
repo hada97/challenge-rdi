@@ -1,20 +1,23 @@
 package com.rdi.MenuApp.DTO;
 
-
-import com.rdi.MenuApp.domain.ProductComponents;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.util.List;
 
-
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class ProductRequestDTO {
 
     private String name;
+
     private int type;
-    private ProductStatusRequestDTO status; // Status como um objeto separado
-    private List<ProductComponents> components;
+
+    private ProductStatusRequestDTO status;
+
+    // Lista de IDs dos componentes, ao invés de objetos completos de ProductComponents
+    private List<Long> componentIds;
 
     public String getName() {
         return name;
@@ -40,11 +43,11 @@ public class ProductRequestDTO {
         this.status = status;
     }
 
-    public List<ProductComponents> getComponents() {
-        return components;
+    public List<Long> getComponentIds() {
+        return componentIds;
     }
 
-    public void setComponents(List<ProductComponents> components) {
-        this.components = components;
+    public void setComponentIds(List<Long> componentIds) {
+        this.componentIds = componentIds;
     }
 }

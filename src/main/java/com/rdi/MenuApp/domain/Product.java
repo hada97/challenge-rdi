@@ -62,6 +62,11 @@ public class Product {
     @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL)
     private List<ProductComponents> components = new ArrayList<>();
 
+    public void addComponent(Product component) {
+        ProductComponents productComponent = new ProductComponents(this, component);
+        components.add(productComponent);
+    }
+
 
     public Product(long id, int type) {
         this.id = id;

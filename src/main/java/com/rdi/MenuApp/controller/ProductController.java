@@ -1,15 +1,12 @@
 package com.rdi.MenuApp.controller;
 
-import com.rdi.MenuApp.domain.Product;
-import com.rdi.MenuApp.domain.ProductStatus;
 import com.rdi.MenuApp.DTO.ProductRequestDTO;
-import com.rdi.MenuApp.exception.ProductNotFoundException;
+import com.rdi.MenuApp.domain.Product;
 import com.rdi.MenuApp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -42,26 +39,8 @@ public class ProductController {
 
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequestDTO productRequestDTO) {
-
-        Product product = new Product();
-        product.setName(productRequestDTO.getName());
-        product.setType(productRequestDTO.getType());
-
-        // Cria e associa o status
-        ProductStatus productStatus = new ProductStatus();
-        productStatus.setStatus(productRequestDTO.getStatus().getStatus()); // Define o status do produto
-        productStatus.setProduct(product); // Associa o produto ao status
-        product.setStatus(productStatus); // Define o status do produto
-
-        // Processa os componentes
-        product.setComponents(productRequestDTO.getComponents());
-
-        // Salva o produto
-        Product savedProduct = productService.saveProduct(product);
-
-        // Retorna a resposta
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+    public Product createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+        return productService.createProduct(productRequestDTO);
     }
 
 
@@ -74,4 +53,7 @@ public class ProductController {
         }
         return ResponseEntity.status(404).body("Product not found!");
     }
+
+
+
 }
