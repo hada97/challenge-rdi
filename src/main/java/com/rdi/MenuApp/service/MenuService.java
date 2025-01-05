@@ -23,29 +23,36 @@ public class MenuService {
     @Autowired
     private ProductComponentsRepository productComponentsRepository;
 
-    // Método que altera o status do produto
+    @Transactional
     public void changeStatus(Long menuItemId, int status) throws ProductNotFoundException {
-        // Verifica se o status é válido (0 ou 1)
+
         if (status != 0 && status != 1) {
             throw new IllegalArgumentException("Invalid status value. It should be 0 or 1.");
         }
 
-        // Busca o produto
         Product product = productRepository.findById(menuItemId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         // Verifica o tipo do produto e se a alteração de status é permitida
-        if (product.getType() == 2) { // Tipo CHOICE
-            if (hasActiveComponent(menuItemId, status)) {
-                updateProductStatus(menuItemId, status);
-            }
-        } else if (product.getType() == 3) { // Tipo VALUE MEAL
-            if (hasAllComponentsActive(menuItemId, status)) {
-                updateProductStatus(menuItemId, status);
-            }
-        } else { // Outros tipos de produtos
+        boolean isStatusChangeAllowed = false;
+
+        switch (product.getType()) {
+            case 1: // Tipo 1
+                isStatusChangeAllowed = true;
+                break;
+            case 2: // Tipo CHOICE
+                isStatusChangeAllowed = hasActiveComponent(menuItemId, status);
+                break;
+            case 3: // Tipo VALUE MEAL
+                System.out.println("VALUE MEAL");
+                isStatusChangeAllowed = hasAllComponentsActive(menuItemId, status);
+                break;
+        }
+
+        if (isStatusChangeAllowed) {
             updateProductStatus(menuItemId, status);
         }
+
     }
 
     // Verifica se algum componente ativo de um produto do tipo CHOICE possui status 1
@@ -60,32 +67,49 @@ public class MenuService {
         return false; // Nenhum componente ativo
     }
 
-    // Verifica se todos os componentes de um produto do tipo VALUE MEAL estão ativos
     public boolean hasAllComponentsActive(Long menuItemId, int status) {
         List<Long> componentIds = productComponentsRepository.findByParentId(menuItemId);
-        for (Long componentId : componentIds) {
-            int componentStatus = productStatusRepository.findStatusByProductId(componentId);
-            if (componentStatus == 0) {
-                return false; // Encontrou um componente inativo
-            }
-        }
-        return true; // Todos os componentes estão ativos
+        // Verifica se algum componente está inativo diretamente
+        return componentIds.stream()
+                .allMatch(componentId -> productStatusRepository.findStatusByProductId(componentId) != 0);
     }
 
-    // Atualiza o status do produto
+
+
     @Transactional
     public void updateProductStatus(Long menuItemId, int status) {
-        // Busca o produto diretamente e usa seu status
+
+        // Recupera o produto
         Product product = productRepository.findById(menuItemId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
-        ProductStatus productStatus = product.getStatus(); // Acessa o status do produto
+        System.out.println(product.getName());
 
-        // Atualiza o status do produto
-        productStatus.setStatus(status);
-        productStatusRepository.save(productStatus); // Salva a alteração no status do produto
+        // Verifica se o ProductStatus está presente
+        ProductStatus prod = product.getStatus();
 
-        // Salva o produto (necessário para garantir a consistência)
-        productRepository.save(product);
+        if (prod == null) {
+
+            prod = new ProductStatus();
+            prod.setStatus(status);  // Define o novo status
+            prod.setProduct(product); // Associa o Product ao ProductStatus
+
+            // Salva o novo ProductStatus no banco
+            productStatusRepository.save(prod);
+
+            // Associa o ProductStatus ao Product
+            product.setStatus(prod);
+        } else {
+            // Atualiza o status do ProductStatus existente
+            prod.setStatus(status);
+            productStatusRepository.save(prod); // Salva a atualização do ProductStatus
+        }
+
+        // Atualiza o Product
+        productRepository.save(product); // Salva o Product com o novo status
+        System.out.println("Status do produto atualizado: " + prod.getStatus());
     }
+
+
+
 }

@@ -6,7 +6,7 @@ spring:
     password:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -20,6 +20,7 @@ logging:
 h2:
   console:
     enabled: true
+    path: /h2-console  # Defina o caminho para acessar o console H2
 
 springdoc:
   api-docs:

@@ -1,12 +1,15 @@
 package com.rdi.MenuApp.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Getter
 public class ProductStatusRequestDTO {
+
+    private int status; // 0 ou 1
+
     public int getStatus() {
         return status;
     }
@@ -14,7 +17,4 @@ public class ProductStatusRequestDTO {
     public void setStatus(int status) {
         this.status = status;
     }
-
-    private int status; // 0 ou 1
-
 }

@@ -1,6 +1,7 @@
 package com.rdi.MenuApp.controller;
 
 import com.rdi.MenuApp.DTO.ProductStatusRequestDTO;
+import com.rdi.MenuApp.domain.ProductStatus;
 import com.rdi.MenuApp.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ public class MenuController {
     @PutMapping("/{menuItemId}/status")
     public ResponseEntity<String> changeStatus(@PathVariable Long menuItemId, @RequestBody ProductStatusRequestDTO status) {
         try {
+
             menuService.changeStatus(menuItemId, status.getStatus());
             return ResponseEntity.ok("Status updated successfully.");
         } catch (Exception e) {
